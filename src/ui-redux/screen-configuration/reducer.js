@@ -14,7 +14,11 @@ const intialState = {
       message: ""
     },
     spinner: false,
-    userInfo: getUserInfo()
+    userInfo: getUserInfo(),
+    dashboard: {
+      openSurvey: {},
+      question1_data: {}
+    }
   }
 };
 

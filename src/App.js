@@ -7,7 +7,6 @@ import MainRoutes from "./ui-routes/MainRoutes";
 import { connect } from "react-redux";
 import "./App.css";
 import { httpRequest } from "./ui-utils/api";
-// import LoadingOverlay from "react-loading-overlay";
 import LoadingOverlay from "react-loading-overlay";
 
 const App = props => {

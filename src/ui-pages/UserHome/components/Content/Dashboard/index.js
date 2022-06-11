@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import "react-table/react-table.css";
 import { mapDispatchToProps } from "../../../../../ui-utils/commons";
 import { Hidden, Typography, Grid, Button } from "@material-ui/core";
-import logoImage from "../../../../../ui-assets/images /logoYardstix.svg";
+import logoImage from "../../../../../ui-assets/images/logoYardstix.svg";
+import { httpRequest } from "../../../../../ui-utils/api";
 
 const styles = theme => ({
   root: {
@@ -124,206 +125,237 @@ const styles = theme => ({
   }
 });
 
-class Dashboard extends React.Component {
-  onClickHandler = () => {
-    const { history } = this.props;
+const Dashboard = props => {
+  const { classes, userInfo, openSurvey, history } = props;
+  console.log("user", userInfo);
+  console.log("open survy", openSurvey);
+
+  const [openSurveyDetails, setOpenSurveydetails] = useState([]);
+  const [surveyList, setSurveyList] = useState(" ");
+  console.log("surveyLi", surveyList);
+
+  useEffect(() => {
+    if (userInfo?.UserId) {
+      getOpenSurvey(userInfo.UserId);
+    }
+  }, [userInfo]);
+
+  const openSurveyHandler = () => {
+    if (openSurvey) {
+      getQuestionHandler(openSurvey[0]?.userId, openSurvey[0]?.surveyId);
+    }
+    history.push("./user-home/questionComponent");
+  };
+
+  const onClickHandler = () => {
+    const { history } = props;
     history.push("./user-home/feedback");
   };
 
-  redCardHandler = () => {
-    const { history } = this.props;
-    history.push("./user-home/question1");
+  const getQuestionHandler = async (uid, sid) => {
+    try {
+      await httpRequest({
+        endPoint: `api/v1/user/questions?userId=${uid}&questionId=${0}&surveyId=${sid}`,
+        method: "get",
+        instance: "instanceOne",
+        contentType: "application/json",
+        authReqd: true
+      }).then(response => {
+        console.log(response);
+        localStorage.setItem("question1_data", JSON.stringify(response));
+        props.setAppData("dashboard.question1_data", response);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+    // history.push("./user-home/question1");
   };
 
-  render() {
-    const { classes } = this.props;
+  const getOpenSurvey = async id => {
+    try {
+      await httpRequest({
+        endPoint: `api/v1/user/allOpenSurveys?userId=${id}`,
+        method: "get",
+        instance: "instanceOne",
+        contentType: "application/json",
+        authReqd: true
+      }).then(response => {
+        console.log(response);
+        localStorage.setItem("openSurvey", JSON.stringify(response));
+        props.setAppData("dashboard.openSurvey", response);
+        // setOpenSurveydetails({ openSurveyDetails: response });
+        let Tempdata = response.filter(item => !item._Finalized).length;
+        setSurveyList({ surveyList: Tempdata });
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-    return (
-      <div className={classes.root}>
-        <Hidden only={"xs"}>
-          <div className={classes.dashboardRoot}>
-            <Typography className={classes.welcomtext}>Welcome to</Typography>
+  return (
+    <div className={classes.root}>
+      <Hidden only={"xs"}>
+        <div className={classes.dashboardRoot}>
+          <Typography className={classes.welcomtext}>Welcome to</Typography>
+          <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
+          <Typography className={classes.infoText}>
+            Currently we help you measure your success in transforming only
+            through your mobile device.{" "}
+            <a className={classes.highlightText}> Quick and simple! </a>
+          </Typography>
+        </div>
+      </Hidden>
+      <Hidden only={["lg", "md", "xl", "sm"]}>
+        <div className={classes.mobileRoot}>
+          <div className={classes.logoImageStyle}>
             <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
-            <Typography className={classes.infoText}>
-              Currently we help you measure your success in transforming only
-              through your mobile device.{" "}
-              <a className={classes.highlightText}> Quick and simple! </a>
-            </Typography>
           </div>
-        </Hidden>
-        <Hidden only={["lg", "md", "xl", "sm"]}>
-          <div className={classes.mobileRoot}>
-            <div className={classes.logoImageStyle}>
-              <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
-            </div>
-            <Button className={classes.redCard} onClick={this.redCardHandler}>
-              <Typography className={classes.openText}>1 open Stix</Typography>
+          {surveyList === 0 ? (
+            <div className={classes.whiteCard}>
+              <Typography className={classes.openText}>No open Stix</Typography>
               <Typography className={classes.openText2}>
                 {" "}
-                The weekly Change Readiness Stix is ready for you!
+                Good luck transforming your organization! There are no new Stix
+                planned for you yet...s!
+              </Typography>
+            </div>
+          ) : (
+            <Button className={classes.redCard} onClick={openSurveyHandler}>
+              <Typography className={classes.openText}>
+                {" "}
+                {surveyList.surveyList} open Stix
+              </Typography>
+              <Typography className={classes.openText2}>
+                {" "}
+                The weekly Change {openSurvey[0]?.surveyName} is ready for you!
               </Typography>
             </Button>
+          )}
 
-            {/* no open Stix */}
+          <Typography className={classes.suggestionText}>
+            We are continuously adding new functionalities to your personal
+            Yardstix space! If you have suggestions please{" "}
+            <a className={classes.buttonStyle} onClick={() => onClickHandler()}>
+              click here...
+            </a>
+          </Typography>
+        </div>
+      </Hidden>
+    </div>
+  );
+};
 
-            {/* <div className={classes.whiteCard}>
-              <Typography className={classes.openText}>No open Stix</Typography>
-              <Typography className={classes.openText2}> Good luck transforming your organization! There are no new Stix planned for you yet...s!</Typography>
-            </div> */}
-
-            <Typography className={classes.suggestionText}>
-              We are continuously adding new functionalities to your personal
-              Yardstix space! If you have suggestions please{" "}
-              <a className={classes.buttonStyle} onClick={this.onClickHandler}>
-                click here...
-              </a>
-            </Typography>
-          </div>
-        </Hidden>
-      </div>
-    );
-  }
-}
 const mapStateToProps = ({ screenConfiguration = {} }) => {
   const { preparedFinalObject = {} } = screenConfiguration;
-  const { dashboard } = preparedFinalObject;
-  return { dashboard };
+  const { userInfo, dashboard } = preparedFinalObject;
+  const { openSurvey } = dashboard || "";
+  return { userInfo, openSurvey };
 };
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(withStyles(styles)(Dashboard));
 
-// import { Box, Slider } from "@material-ui/core";
-// import { useState } from "react";
-
-// function App() {
-//   const [value, setValue] = useState(20);
-
-//   const changeValue = (event, value) => {
-//     setValue(value);
-//   };
-
-//   const [multiValue, setMultiValue] = useState([20, 30, 50]);
-
-//   const changeMultiValue = (event, value) => {
-//     setMultiValue(value);
-//   };
-
-//   const getText = (valu) => `${value}`;
-
-//   const customMarks = [
-//     {
-//       value: 10,
-//       label: "$10"
-//     },
-//     {
-//       value: 20,
-//       label: "$20"
-//     },
-//     {
-//       value: 30,
-//       label: "$30"
-//     },
-//     {
-//       value: 40,
-//       label: "$40"
-//     },
-//     {
-//       value: 50,
-//       label: "$50"
-//     },
-//     {
-//       value: 100,
-//       label: "$100"
+// class Dashboard extends React.Component {
+//   state = {
+//     userSurvey: [],
+//     // UserIdNumber: this.props.userInfo.UserId,
+//   }
+//   componentDidMount = () => {
+//     console.log("user", this.props.userInfo);
+//     if (this.props.userInfo?.UserId) {
+//       this.getOpenSurveyList(this.props.userInfo.UserId);
+//       // this.getOpenSurveyList();
 //     }
-//   ];
-//   return (
-//     <Box display="flex" flexDirection="column" m={10}>
-//       <Slider style={{ width: 300 }} value={value} onChange={changeValue} />
-//       <Slider
-//         style={{ width: 300 }}
-//         min={10}
-//         max={100}
-//         step={10}
-//         value={value}
-//         marks
-//         onChange={changeValue}
-//         valueLabelDisplay="auto"
-//         getAriaValueText={getText}
-//       />
-//       <Slider
-//         disabled
-//         style={{ width: 300 }}
-//         value={value}
-//         onChange={changeValue}
-//       />
-//       <Slider
-//         style={{ width: 300 }}
-//         min={10}
-//         max={100}
-//         step={10}
-//         value={value}
-//         marks={customMarks}
-//         onChange={changeValue}
-//         valueLabelDisplay="auto"
-//         getAriaValueText={getText}
-//       />
-//       <Slider
-//         style={{ width: 300 }}
-//         min={10}
-//         max={100}
-//         step={10}
-//         value={value}
-//         marks={customMarks}
-//         onChange={changeValue}
-//         valueLabelDisplay="on"
-//         getAriaValueText={getText}
-//       />
-//       <Slider
-//         style={{ width: 300 }}
-//         min={10}
-//         max={100}
-//         step={null}
-//         value={value}
-//         marks={customMarks}
-//         onChange={changeValue}
-//         valueLabelDisplay="auto"
-//         getAriaValueText={getText}
-//       />
-//       <Slider
-//         style={{ width: 300 }}
-//         min={10}
-//         max={100}
-//         step={null}
-//         value={value}
-//         marks={customMarks}
-//         onChange={changeValue}
-//         valueLabelDisplay="auto"
-//         getAriaValueText={getText}
-//         track="inverted"
-//       />
-//       <Slider
-//         style={{ height: 300, marginTop: 30 }}
-//         min={10}
-//         max={100}
-//         step={null}
-//         value={value}
-//         marks={customMarks}
-//         onChange={changeValue}
-//         valueLabelDisplay="auto"
-//         getAriaValueText={getText}
-//         orientation="vertical"
-//       />
-//       <Slider
-//         style={{ width: 300, marginTop: 40 }}
-//         min={10}
-//         max={100}
-//         value={multiValue}
-//         onChange={changeMultiValue}
-//       />
-//     </Box>
-//   );
-// }
+//   }
 
-// export default App;
+//   onClickHandler = () => {
+//     const { history } = this.props;
+//     history.push("./user-home/feedback");
+//   };
+
+//   redCardHandler = () => {
+//     const { history } = this.props;
+//     history.push("./user-home/question1");
+//   };
+
+//   getOpenSurveyList = async id => {
+//     const { setAppData } = this.props;
+//     console.log("props",this.props);
+//     try {
+//       await httpRequest({
+//         endPoint: `api/v1/user/allOpenSurveys?userId=${id}`,
+//         method: "get",
+//         instance: "instanceOne",
+//         contentType:"appication/json"
+//       }).then(response => {
+//         console.log("response", response);
+//         if (response?.length > 0) {
+//           setAppData("dashboard.organisation_info", response);
+//           this.setState({ userSurvey: response[0] });
+//         }
+//       });
+//     } catch (e) {
+//       console.log({ e });
+//     }
+//   };
+
+//   render() {
+//     const { classes, userInfo } = this.props;
+//     console.log("user", userInfo);
+
+//     return (
+//       <div className={classes.root}>
+//         <Hidden only={"xs"}>
+//           <div className={classes.dashboardRoot}>
+//             <Typography className={classes.welcomtext}>Welcome to</Typography>
+//             <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
+//             <Typography className={classes.infoText}>
+//               Currently we help you measure your success in transforming only
+//               through your mobile device.{" "}
+//               <a className={classes.highlightText}> Quick and simple! </a>
+//             </Typography>
+//           </div>
+//         </Hidden>
+//         <Hidden only={["lg", "md", "xl", "sm"]}>
+//           <div className={classes.mobileRoot}>
+//             <div className={classes.logoImageStyle}>
+//               <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
+//             </div>
+//             <Button className={classes.redCard} onClick={this.redCardHandler}>
+//               <Typography className={classes.openText}>1 open Stix</Typography>
+//               <Typography className={classes.openText2}>
+//                 {" "}
+//                 The weekly Change Readiness Stix is ready for you!
+//               </Typography>
+//             </Button>
+
+//             {/* no open Stix */}
+
+//             {/* <div className={classes.whiteCard}>
+//               <Typography className={classes.openText}>No open Stix</Typography>
+//               <Typography className={classes.openText2}> Good luck transforming your organization! There are no new Stix planned for you yet...s!</Typography>
+//             </div> */}
+
+//             <Typography className={classes.suggestionText}>
+//               We are continuously adding new functionalities to your personal
+//               Yardstix space! If you have suggestions please{" "}
+//               <a className={classes.buttonStyle} onClick={this.onClickHandler}>
+//                 click here...
+//               </a>
+//             </Typography>
+//           </div>
+//         </Hidden>
+//       </div>
+//     );
+//   }
+// }
+// const mapStateToProps = ({ screenConfiguration = {} }) => {
+//   const { preparedFinalObject = {} } = screenConfiguration;
+//   const { userInfo } = preparedFinalObject;
+//   return { userInfo };
+// };
+// export default connect(
+//   mapStateToProps,
+//   mapDispatchToProps
+// )(withStyles(styles)(Dashboard));

@@ -3,10 +3,10 @@ import { withStyles } from "@material-ui/core/styles";
 import { mapDispatchToProps } from "../../ui-utils/commons";
 import { connect } from "react-redux";
 import { Hidden, Typography, Grid, Button } from "@material-ui/core";
-import logoImage from "../../ui-assets/images /logoYardstix.svg";
-import rectangle from "../../ui-assets/images /rectangleImage.svg";
-import arrow from "../../ui-assets/images /forwardArrow.svg";
-import windows from "../../ui-assets/images /windows.svg";
+import logoImage from "../../ui-assets/images/logoYardstix.svg";
+import rectangle from "../../ui-assets/images/rectangleImage.svg";
+import arrow from "../../ui-assets/images/forwardArrow.svg";
+import windows from "../../ui-assets/images/windows.svg";
 import { httpRequest } from "ui-utils";
 
 const styles = {
@@ -38,7 +38,7 @@ const styles = {
     }
   },
   logoMobiimg: {
-    "@media only screen and (min-width:250px) and (max-width:420px)": {
+    "@media only screen and (min-width:250px) and (max-width:320px)": {
       height: "60px"
     }
   },
@@ -158,6 +158,7 @@ const styles = {
     fontSize: "16px",
     fontWeight: "400",
     lineHeight: "20px",
+    fontFamily: "Montserrat",
     "@media only screen and (min-width:250px) and (max-width:330px)": {
       fontSize: "14px"
     },
@@ -217,21 +218,18 @@ class Login extends React.Component {
             </div>
 
             <div className={classes.loginPinkCard}>
-              <Grid container>
-                <Grid
-                  item
-                  xs={1}
-                  justify="center"
-                  alignItems="baseline"
-                  style={{ display: "flex", paddingRight: "5px" }}
-                >
+              <Grid
+                container
+                style={{ display: "flex", paddingRight: "5px", gap: "10px" }}
+              >
+                <Grid item xs={1} alignItems="baseline" justifyContent="center">
                   <img
                     className={classes.rectangleImage}
                     src={rectangle}
                     alt="rectangle"
                   ></img>
                 </Grid>
-                <Grid item xs={11}>
+                <Grid item xs={10}>
                   <Typography className={classes.textStyle}>
                     Yardstix is only allows for access by{" "}
                     <p className={classes.heighlightText}>
@@ -244,14 +242,13 @@ class Login extends React.Component {
               </Grid>
             </div>
             <div className={classes.loginButton} onClick={this.loginHandler}>
-              <Grid container style={{ padding: "10px" }}>
-                <Grid
-                  item
-                  xs={2}
-                  justify="center"
-                  alignItems="center"
-                  style={{ display: "flex" }}
-                >
+              <Grid
+                container
+                style={{ padding: "10px" }}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Grid item xs={2} style={{ display: "flex" }}>
                   <img
                     className={classes.windowsImage}
                     src={windows}
@@ -269,13 +266,7 @@ class Login extends React.Component {
                     </Typography>
                   </Typography>
                 </Grid>
-                <Grid
-                  item
-                  xs={1}
-                  justify="center"
-                  alignItems="center"
-                  style={{ display: "flex" }}
-                >
+                <Grid item xs={1} style={{ display: "flex" }}>
                   <div>
                     <img className={classes.logoMobi} src={arrow} alt="arrow" />
                   </div>

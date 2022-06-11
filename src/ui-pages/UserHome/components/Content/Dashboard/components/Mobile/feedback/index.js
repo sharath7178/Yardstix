@@ -10,12 +10,12 @@ import {
   IconButton,
   InputBase
 } from "@material-ui/core";
-import logoImage from "../../../../../../../../ui-assets/images /logoYardstix.svg";
+import logoImage from "../../../../../../../../ui-assets/images/logoYardstix.svg";
 // import Stack from '@mui/material/Stack';
 // import Slider from '@mui/material/Slider';
 // import { styled } from '@mui/material/styles';
-import back from "../../../../../../../../ui-assets/images /keyboardReturn.svg";
-import check from "../../../../../../../../ui-assets/images /check.svg";
+import back from "../../../../../../../../ui-assets/images/keyboardReturn.svg";
+import check from "../../../../../../../../ui-assets/images/check.svg";
 
 const styles = theme => ({
   root: {

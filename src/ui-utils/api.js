@@ -51,6 +51,7 @@ export const httpRequest = async ({
   headers = {},
   authReqd = false
 }) => {
+  // debugger
   if (hasSpinner) {
     store.dispatch(prepareFinalObject("spinner", true));
   }

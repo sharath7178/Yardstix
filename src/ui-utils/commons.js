@@ -79,32 +79,30 @@ export const departments = [
 export const sliderJson = [
   {
     value: 0,
-    label: "Less than 6 months",
-    color: "darkred"
+    label: "Less than 6 months"
   },
   {
     value: 20,
-    label: "6 months - 1 year",
-    color: "darkred"
+    label: "6 months - 1 year"
   },
   {
     value: 40,
-    label: "1-3 years",
-    color: "orange"
+    label: "1-3 years"
+    // color: "orange"
   },
   {
     value: 60,
-    label: "3-5 years",
-    color: "orange"
+    label: "3-5 years"
+    // color: "orange"
   },
   {
     value: 80,
-    label: "5-7 years",
-    color: "green"
+    label: "5-7 years"
+    // color: "green"
   },
   {
     value: 100,
-    label: "7 or more years",
-    color: "green"
+    label: "7 or more years"
+    // color: "green"
   }
 ];

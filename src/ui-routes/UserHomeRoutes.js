@@ -8,26 +8,10 @@ const Dashboard = Loadable({
   loading: Loading
 });
 
-const Question1 = Loadable({
+const QuestionComponent = Loadable({
   loader: () =>
     import(
-      "../ui-pages/UserHome/components/Content/Dashboard/components/Mobile/question1"
-    ),
-  loading: Loading
-});
-
-const Question2 = Loadable({
-  loader: () =>
-    import(
-      "../ui-pages/UserHome/components/Content/Dashboard/components/Mobile/question2"
-    ),
-  loading: Loading
-});
-
-const Question3 = Loadable({
-  loader: () =>
-    import(
-      "../ui-pages/UserHome/components/Content/Dashboard/components/Mobile/question3"
+      "../ui-pages/UserHome/components/Content/Dashboard/components/Mobile/quesionComponent"
     ),
   loading: Loading
 });
@@ -44,9 +28,10 @@ const UserRoutes = () => {
   return (
     <div>
       <Route exact path="/Yardstix/user-home" component={Dashboard} />
-      <Route path="/Yardstix/user-home/question1" component={Question1} />
-      <Route path="/Yardstix/user-home/question2" component={Question2} />
-      <Route path="/Yardstix/user-home/question3" component={Question3} />
+      <Route
+        path="/Yardstix/user-home/questionComponent"
+        component={QuestionComponent}
+      />
       <Route path="/Yardstix/user-home/feedback" component={feedback} />
     </div>
   );
