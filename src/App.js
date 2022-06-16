@@ -18,6 +18,7 @@ const App = props => {
   console.log("access token", hasAccess_token);
 
   useEffect(() => {
+    debugger;
     if (hasAccess_token) {
       let tempLocation = window.location.href.split("&")?.[0].split("=") || "";
       localStorage.setItem("access_token", tempLocation[1]);

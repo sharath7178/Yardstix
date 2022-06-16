@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import "../index.css";
@@ -67,7 +67,22 @@ const PrettoSlider = styled(Slider)({
 });
 
 const AnswerFormat1 = props => {
-  const { classes, maximum_ans, minimum_ans, answers_array } = props;
+  const {
+    classes,
+    maximum_ans,
+    minimum_ans,
+    answers_array,
+    handleAnswerChange
+  } = props;
+  const [sliderValue, setSliderValue] = useState(" ");
+
+  console.log("mini", minimum_ans);
+  console.log("slider value", sliderValue);
+
+  const onChangeHandler = e => {
+    setSliderValue({ sliderValue: e.target.value });
+    handleAnswerChange(e.target.value);
+  };
 
   return (
     <div className={classes.sliderDiv}>
@@ -83,11 +98,13 @@ const AnswerFormat1 = props => {
           aria-label="Temperature"
           orientation="vertical"
           valueLabelDisplay="off"
+          defaultValue={0}
           type="range"
           name="rangeInput"
           max={maximum_ans}
           min={minimum_ans}
           marks={answers_array}
+          onChange={e => onChangeHandler(e)}
         />
       </Stack>
     </div>

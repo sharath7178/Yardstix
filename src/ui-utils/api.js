@@ -27,13 +27,6 @@ let axiosInstances = {
       "Content-Type": "application/json"
     }
   })
-  // instanceTwo: axios.create({
-  //   baseURL:
-  //     process.env.REACT_APP_NODE_REST ||  window.location.origin,
-  //   headers: {
-  //     "Content-Type": "application/json"
-  //   }
-  // })
 };
 
 const wrapRequestBody = requestBody => {
@@ -78,9 +71,7 @@ export const httpRequest = async ({
         requestBody = params;
         break;
       default:
-        //requestBody.session_id = session_id;
         headers["session_id"] = session_id;
-      //requestBody["session.id"] = session_id;
     }
   }
 

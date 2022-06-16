@@ -177,12 +177,14 @@ class Login extends React.Component {
   };
 
   loginHandler = async () => {
+    debugger;
     try {
       await httpRequest({
         endPoint: `api/Account/ExternalLogins?returnUrl=https://projects.nimble.expert/NMTApi/&generateState=${true}`,
         method: "get",
         instance: "instanceOne"
       }).then(response => {
+        console.log("res", response);
         if (response?.length > 0) {
           let url = response[0]?.Url;
 

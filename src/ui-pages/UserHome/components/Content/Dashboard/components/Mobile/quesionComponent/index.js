@@ -15,9 +15,6 @@ import {
   InputBase
 } from "@material-ui/core";
 import logoImage from "../../../../../../../../ui-assets/images/logoYardstix.svg";
-import Stack from "@mui/material/Stack";
-import Slider from "@mui/material/Slider";
-import { styled } from "@mui/material/styles";
 import back from "../../../../../../../../ui-assets/images/keyboardReturn.svg";
 import check from "../../../../../../../../ui-assets/images/check.svg";
 import "./index.css";
@@ -58,8 +55,8 @@ const styles = theme => ({
     }
   },
   logoMobiimg: {
-    "@media only screen and (min-width:250px) and (max-width:420px)": {
-      height: "60px"
+    "@media only screen and (min-width:50px) and (max-width:600px)": {
+      width: "100%"
     }
   },
   questionStyle: {
@@ -109,9 +106,6 @@ const styles = theme => ({
     alignItems: "center",
     background: "linear-gradient(31.62deg, #299F16 0%, #8BFF78 100%)",
     borderRadius: "10px 0px 0px 10px"
-    // "@media only screen and (min-height:600px) and (max-height:750px)": {
-    //   borderRadius: "5px 0px 0px 5px",
-    // },
   },
   checkimg: {
     "@media only screen and (min-height:600px) and (max-height:750px)": {
@@ -124,14 +118,16 @@ class QuestionComponent extends React.Component {
   state = {
     next_question_id: 0,
     questions_object: [],
-    answer_code: null,
-    selected_ans: {},
+    // selected_ans: {},
     answers_array: [],
     maximum_ans: null,
     minimum_ans: null,
-    ans_format_code: "1" && "2" && "3" && "4",
-    answer_select_value: {}
+    ans_format_code: null,
+    answer_select_value: {},
+    selected_ans: null
   };
+
+  handleAnswerChange = this.handleAnswerChange.bind(this);
 
   componentDidMount = () => {
     const { openSurvey } = this.props;
@@ -161,7 +157,8 @@ class QuestionComponent extends React.Component {
           tempData.push({
             value: item.AnswerId,
             label: item.label,
-            selected: true
+            selected: true,
+            width: " "
           });
         });
         const max_num = Math.max(...tempData.map(item => item.value));
@@ -180,76 +177,114 @@ class QuestionComponent extends React.Component {
     }
   };
 
-  // postAnswerHanlder = async () => {
-  //   const { setAppData } = this.props;
-  //   const { questions_object, answers_array } = this.state;
-  //   try {
+  handleAnswerChange(value) {
+    console.log("value", value);
+    this.setState({ selected_ans: value });
+  }
 
-  //     const answer_value = answers_array.map((item) => item.selected === false);
-  //     console.log("answer_value",answer_value);
+  postAnswerHanlder = async () => {
+    const { setAppData, openSurvey, history } = this.props;
+    const {
+      questions_object,
+      selected_ans,
+      ans_format_code,
+      next_question_id
+    } = this.state;
+    try {
+      debugger;
+      const body = {
+        userId: questions_object?.UserId,
+        userSurveyId: questions_object?.UserId,
+        finilized: !next_question_id ? true : null,
+        answerId: null,
+        questionId: questions_object?.QuestionId,
+        empoymentMonths: null,
+        department: null,
+        designation: null,
+        scale5: null,
+        other: null
+      };
 
-  //     await httpRequest({
-  //       endPoint: "api/v1/user/addAnswers",
-  //       method: "post",
-  //       instance: "instanceOne",
-  //       requestBody: {
-  //         userId: questions_object?.UserId,
-  //         userSurveyId: questions_object?.UserId,
-  //         finilized: true,
-  //         answerId: answer_value,
-  //         questionId: questions_object?.QuestionId,
-  //         empoymentMonths: null,
-  //         department: 7,
-  //         designation: 8,
-  //         scale5: 9,
-  //         other: "sample string 10"
-  //       },
-  //       authReqd: true,
-  //       contentType: "application/json"
-  //     }).then(async response => {
-  //       console.log("company response ", response);
-  //       if (response.OrganisationId) {
-  //         setAppData("snackbar", {
-  //           open: true,
-  //           variant: "success",
-  //           message: "Gegevenswijziging succesvol aangevraagd."
-  //         });
-  //         await this.getComGuide(
-  //           response.OrganisationId,
-  //           response.idPortal_CompanyGuide
-  //         );
-  //       } else {
-  //         setAppData("snackbar", {
-  //           open: true,
-  //           variant: "error",
-  //           message: "enter the valid  details"
-  //         });
-  //       }
-  //     });
-  //   } catch (e) {
-  //     setAppData("snackbar", {
-  //       open: true,
-  //       variant: "warning",
-  //       message: "its not working"
-  //     });
-  //     console.log(e);
-  //   }
-  // };
+      const regMatch = /^[a-zA-Z]*$/.test(selected_ans);
+      let tempdata = regMatch;
+      // var tempdata = (selected_ans) => {
+      //   debugger
+      //   let letters = /^[A-Za-z]+$/;
+
+      //   if (selected_ans.value.match(/^[A-Za-z]+$/)) {
+      //     return selected_ans;
+      //   }
+      //   else {
+      //     return null;
+      //   }
+      // }
+      console.log("tempdata ", tempdata);
+      console.log("temp", regMatch);
+
+      switch (ans_format_code) {
+        case "1":
+          body.empoymentMonths = selected_ans;
+          break;
+        case "2":
+          body.department = selected_ans;
+          body.other = selected_ans;
+          break;
+        case "3":
+          body.designation = selected_ans;
+          break;
+        case "4":
+          body.scale5 = selected_ans;
+          break;
+
+        default:
+          break;
+      }
+
+      await httpRequest({
+        endPoint: "api/v1/user/addAnswers",
+        method: "post",
+        instance: "instanceOne",
+        requestBody: body,
+        authReqd: true,
+        contentType: "application/json"
+      }).then(async response => {
+        if (response.userId) {
+          if (openSurvey && next_question_id) {
+            this.getQuestionHandler(
+              openSurvey[0]?.userId,
+              next_question_id,
+              openSurvey[0]?.surveyId
+            );
+            this.setState({ selected_ans: null });
+          } else if (next_question_id === null) {
+            history.push("/Yardstix/user-home");
+          }
+        } else {
+          setAppData("snackbar", {
+            open: true,
+            variant: "error",
+            message: "enter the valid  details"
+          });
+        }
+      });
+    } catch (e) {
+      setAppData("snackbar", {
+        open: true,
+        variant: "warning",
+        message: "its not working"
+      });
+      console.log(e);
+    }
+  };
 
   backHandler = () => {
     const { history } = this.props;
     history.push("/Yardstix/user-home");
   };
 
-  nextQuestionHandler = () => {
-    const { openSurvey, history } = this.props;
-    const { next_question_id } = this.state;
-    if (openSurvey && next_question_id) {
-      this.getQuestionHandler(
-        openSurvey[0]?.userId,
-        next_question_id,
-        openSurvey[0]?.surveyId
-      );
+  nextQuestionHandler = async () => {
+    if (this.state.selected_ans != null) {
+      await this.postAnswerHanlder();
     }
   };
 
@@ -266,21 +301,29 @@ class QuestionComponent extends React.Component {
     console.log("answer", answers_array);
 
     let answerComponent = null;
+
     if (this.state.ans_format_code === "1") {
       answerComponent = (
         <AnswerFormat1
           maximum_ans={this.state.maximum_ans}
           minimum_ans={this.state.minimum_ans}
           answers_array={this.state.answers_array}
+          handleAnswerChange={this.handleAnswerChange}
         />
       );
     } else if (this.state.ans_format_code === "2") {
       answerComponent = (
-        <AnswerFormat2 answers_array={this.state.answers_array} />
+        <AnswerFormat2
+          answers_array={this.state.answers_array}
+          handleAnswerChange={this.handleAnswerChange}
+        />
       );
     } else if (this.state.ans_format_code === "3") {
       answerComponent = (
-        <AnswerFormat3 answers_array={this.state.answers_array} />
+        <AnswerFormat3
+          answers_array={this.state.answers_array}
+          handleAnswerChange={this.handleAnswerChange}
+        />
       );
     } else if (this.state.ans_format_code === "4") {
       answerComponent = (
@@ -288,6 +331,7 @@ class QuestionComponent extends React.Component {
           maximum_ans={this.state.maximum_ans}
           minimum_ans={this.state.minimum_ans}
           answers_array={this.state.answers_array}
+          handleAnswerChange={this.handleAnswerChange}
         />
       );
     }
@@ -304,16 +348,25 @@ class QuestionComponent extends React.Component {
           {answerComponent}
         </div>
         <Grid container className={classes.footerStyle}>
-          <Grid item xs={6} justify="center" className={classes.backImage}>
-            <IconButton onClick={this.backHandler}>
+          <Grid
+            item
+            xs={6}
+            justify="center"
+            className={classes.backImage}
+            onClick={this.backHandler}
+          >
+            <IconButton>
               <img className={classes.backimg} src={back} alt="back" />
             </IconButton>
           </Grid>
-          <Grid item xs={6} justify="center" className={classes.checkImage}>
-            <IconButton
-              onClick={() => this.nextQuestionHandler()}
-              onChange={e => this.onChangeHandler(e)}
-            >
+          <Grid
+            item
+            xs={6}
+            justify="center"
+            className={classes.checkImage}
+            onClick={() => this.nextQuestionHandler()}
+          >
+            <IconButton onChange={e => this.onChangeHandler(e)}>
               <img className={classes.checkimg} src={check} alt="logo" />
             </IconButton>
           </Grid>

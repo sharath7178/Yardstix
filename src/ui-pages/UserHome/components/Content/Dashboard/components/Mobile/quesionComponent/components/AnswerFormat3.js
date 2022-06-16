@@ -1,5 +1,5 @@
 import { withStyles } from "@material-ui/styles";
-import React from "react";
+import React, { useState } from "react";
 import { Button, Typography } from "@material-ui/core";
 
 const styles = theme => ({
@@ -12,6 +12,7 @@ const styles = theme => ({
     fontSize: 16,
     justifyContent: "flex-start",
     fontFamily: "Montserrat",
+    // width: "100%",
     "@media only screen and (min-width:320px) and (max-width:420px)": {
       fontSize: 14
     },
@@ -29,51 +30,84 @@ const styles = theme => ({
     fontSize: 15,
     justifyContent: "flex-start",
     fontFamily: "Montserrat"
+    // width: "100%",
   }
 });
 
-const AnswerFormat3 = props => {
-  const { classes, answers_array } = props;
+class AnswerFormat3 extends React.Component {
+  state = {
+    designation_ans_arr: this.props.answers_array,
+    widthSize: "10%"
+  };
 
-  const selectingHandler = key => {
-    let dummyState = [];
-    dummyState = this.state.marksState.map((item, index) => {
+  componentDidMount = () => {
+    let width = 100;
+    let getWidth = [];
+    getWidth = this.state.designation_ans_arr.map((item, index) => {
+      let ans_width = width - index * 10;
+      return {
+        ...getWidth,
+        ...item,
+        width: ans_width + "%"
+      };
+    });
+    console.log("dummy", getWidth);
+    this.setState({ designation_ans_arr: getWidth });
+  };
+
+  selectingHandler = key => {
+    let tempData = [];
+    const currentObj = this.state.designation_ans_arr.find(
+      (item, index) => key === index
+    );
+    console.log("crn obj", currentObj);
+    tempData = this.state.designation_ans_arr.map((item, index) => {
       if (index !== key) {
         return {
-          ...dummyState,
+          ...tempData,
           ...item,
           selected: true
         };
       } else {
         return {
-          ...dummyState,
+          ...tempData,
           ...item,
           selected: false
         };
       }
     });
-    this.setState({ marksState: dummyState });
+    console.log("key", key);
+    this.setState({ designation_ans_arr: [...tempData] });
+    this.props.handleAnswerChange(currentObj?.value);
   };
-  return (
-    <div>
-      {answers_array.map((item, key) => {
-        return (
-          <Button
-            key={key}
-            style={{ width: item.width }}
-            className={
-              item.selected === false
-                ? classes.selectingDesignationItems
-                : classes.alignDesignationItems
-            }
-            onClick={() => selectingHandler(key)}
-          >
-            {item.label}
-          </Button>
-        );
-      })}
-    </div>
-  );
-};
 
+  render() {
+    const { classes } = this.props;
+
+    return (
+      <div>
+        <div style={{ padding: "20px 0px" }}>
+          {this.state.designation_ans_arr.map((item, key) => {
+            console.log("item", item.width - this.state.widthSize);
+            console.log("item", 100 - 10);
+            return (
+              <Button
+                key={key}
+                style={{ width: item.width }}
+                className={
+                  item.selected === false
+                    ? classes.selectingDesignationItems
+                    : classes.alignDesignationItems
+                }
+                onClick={() => this.selectingHandler(key)}
+              >
+                {item.label}
+              </Button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+}
 export default withStyles(styles)(AnswerFormat3);

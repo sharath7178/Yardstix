@@ -1,5 +1,5 @@
 import { withStyles } from "@material-ui/styles";
-import React, { useState } from "react";
+import React from "react";
 import { Button, InputBase } from "@material-ui/core";
 
 const styles = theme => ({
@@ -52,68 +52,92 @@ const styles = theme => ({
   }
 });
 
-const AnswerFormat2 = props => {
-  const { classes, answers_array } = props;
-  console.log("answer", answers_array);
-
-  const { selectAnswerArray, setSelectAnserArray } = useState(answers_array);
-
-  const selectingHandler = key => {
-    let dummyState = [];
-    console.log("dummydata", dummyState);
-    dummyState = answers_array.map((item, index) => {
-      if (index !== key) {
-        return {
-          ...dummyState,
-          ...item,
-          selected: true
-        };
-      } else {
-        return {
-          ...dummyState,
-          ...item,
-          selected: false
-        };
-      }
-    });
-    console.log("dummydata", dummyState);
-    setSelectAnserArray({ selectAnswerArray: dummyState });
+class AnswerFormat2 extends React.Component {
+  state = {
+    depart_ans_array: this.props.answers_array,
+    depart_select_value: null,
+    selected_state: true
   };
-  console.log("selectAnswerArray", selectAnswerArray);
-  return (
-    <div>
-      <div style={{ padding: "20px 0px" }}>
-        {answers_array.map((item, key) => {
-          console.log("item2", item);
-          return (
-            <Button
-              key={key}
-              className={
-                item.selected === false
-                  ? classes.selectingDesignationItems
-                  : classes.alignDesignationItems
-              }
-              onClick={() => selectingHandler(key)}
-            >
-              {item.label}
-            </Button>
-          );
-        })}
-      </div>
 
-      <div className={classes.searchData}>
-        <InputBase
-          className={classes.stylesText}
-          placeholder="Type other here...."
-          type="text"
-          // defaultValue={company_guide?.Description || ""}
-          // onChange={e => this.handleChnage(e.target.value)}
-          // multiline={2}
-          style={{ lineHeight: "30px" }}
-          fullWidth
-        />
+  selectingHandler = key => {
+    let tempData = [];
+    let changeBoolean = !this.state.selected_state;
+    this.setState({ selected_state: changeBoolean });
+    const currentObj = this.state.depart_ans_array.find(
+      (item, index) => key === index
+    );
+    if (!this.state.depart_select_value) {
+      tempData = this.state.depart_ans_array.map((item, index) => {
+        if (index !== key) {
+          return {
+            ...tempData,
+            ...item,
+            selected: true
+          };
+        } else {
+          return {
+            ...tempData,
+            ...item,
+            selected: changeBoolean
+          };
+        }
+      });
+      this.setState({ depart_ans_array: [...tempData] });
+      this.props.handleAnswerChange(currentObj?.value);
+    }
+  };
+
+  handleChnage = e => {
+    const currentData = this.state.depart_ans_array.filter(
+      (item, index) => !item.selected
+    );
+    if (!currentData.length > 0) {
+      this.setState({ depart_select_value: e.target.value });
+      this.props.handleAnswerChange(e.target.value);
+    }
+  };
+
+  render() {
+    const { classes } = this.props;
+    let selectedData = [];
+    selectedData = this.state.depart_ans_array.filter(
+      (item, index) => !item.selected
+    );
+
+    return (
+      <div>
+        <div style={{ padding: "20px 0px" }}>
+          {this.state.depart_ans_array.map((item, key) => {
+            return (
+              <Button
+                key={key}
+                className={
+                  item.selected === false
+                    ? classes.selectingDesignationItems
+                    : classes.alignDesignationItems
+                }
+                onClick={() => this.selectingHandler(key)}
+              >
+                {item.label}
+              </Button>
+            );
+          })}
+        </div>
+
+        <div className={classes.searchData}>
+          <InputBase
+            className={classes.stylesText}
+            placeholder="Type other here...."
+            type="text"
+            disabled={selectedData?.length > 0}
+            onChange={e => this.handleChnage(e)}
+            // multiline={2}
+            style={{ lineHeight: "30px" }}
+            fullWidth
+          />
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 export default withStyles(styles)(AnswerFormat2);

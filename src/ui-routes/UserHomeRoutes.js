@@ -1,7 +1,8 @@
 import React from "react";
-import { Route } from "react-router";
 import Loadable from "react-loadable";
+import { Route } from "react-router-dom";
 import Loading from "../ui-molecules/Loading";
+import SecuredRoute from "./SecuredRoute";
 
 const Dashboard = Loadable({
   loader: () => import("../ui-pages/UserHome/components/Content/Dashboard"),
@@ -28,11 +29,11 @@ const UserRoutes = () => {
   return (
     <div>
       <Route exact path="/Yardstix/user-home" component={Dashboard} />
-      <Route
+      <SecuredRoute
         path="/Yardstix/user-home/questionComponent"
         component={QuestionComponent}
       />
-      <Route path="/Yardstix/user-home/feedback" component={feedback} />
+      <SecuredRoute path="/Yardstix/user-home/feedback" component={feedback} />
     </div>
   );
 };

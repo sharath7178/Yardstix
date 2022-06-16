@@ -11,9 +11,6 @@ import {
   InputBase
 } from "@material-ui/core";
 import logoImage from "../../../../../../../../ui-assets/images/logoYardstix.svg";
-// import Stack from '@mui/material/Stack';
-// import Slider from '@mui/material/Slider';
-// import { styled } from '@mui/material/styles';
 import back from "../../../../../../../../ui-assets/images/keyboardReturn.svg";
 import check from "../../../../../../../../ui-assets/images/check.svg";
 
@@ -42,8 +39,8 @@ const styles = theme => ({
     }
   },
   logoMobiimg: {
-    "@media only screen and (min-width:250px) and (max-width:420px)": {
-      height: "60px"
+    "@media only screen and (min-width:50px) and (max-width:600px)": {
+      width: "100%"
     }
   },
   questionStyle: {
@@ -53,15 +50,6 @@ const styles = theme => ({
     fontFamily: "Montserrat",
     fontWeight: 400
   },
-  //   sliderDiv: {
-  //     display: "flex",
-  //     justifyContent: "center",
-  //     alignItems: "center",
-  //     padding: "30px"
-  //   },
-  //   sliderRoot: {
-  //     color: "#fff"
-  //   },
   footerStyle: {
     position: "fixed",
     left: 0,
@@ -97,9 +85,6 @@ const styles = theme => ({
     alignItems: "center",
     background: "linear-gradient(to right,#299F16 0%, #8BFF78 100%)",
     borderRadius: "10px 0px 0px 10px"
-    // "@media only screen and (min-height:600px) and (max-height:750px)": {
-    //   borderRadius: "5px 0px 0px 5px",
-    // },"linear-gradient(to right, #299F16 0%, #8BFF78 100%)",
   },
   checkimg: {
     "@media only screen and (min-height:600px) and (max-height:750px)": {
@@ -156,8 +141,6 @@ class feedback extends React.Component {
               // name="companyName"
               placeholder="Type your feedback here..."
               type="text"
-              // defaultValue={company_guide?.Description || ""}
-              // onChange={e => this.handleChnage(e.target.value)}
               multiline={2}
               style={{ lineHeight: "30px" }}
             />

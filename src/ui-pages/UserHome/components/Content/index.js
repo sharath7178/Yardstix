@@ -17,31 +17,6 @@ const styles = theme => ({
     // display: "flex",
     height: "100vh"
   }
-  // appBar: {
-  //   zIndex: theme.zIndex.drawer + 1,
-  //   background: "white"
-  // },
-  // webHeader:{
-  //   display:"flex",
-  //   alignItems:"center",
-  //   justifyContent:"left",
-  //   flexGrow: 1
-  // },
-  // avatar:{
-  //   marginRight:"16px"
-  // },
-  // content:{
-  //   display: "flex",
-  //   width:"100vw",
-  //   margin:"88px 8px 8px 8px"
-  // },
-  // userDetails:{
-  //   color:"black",
-  //   display:"flex",
-  //   margin:"0 1%",
-  //   alignItems:"center",
-  //   paddingTop:"2px"
-  // }
 });
 
 class MiniDrawer extends React.Component {

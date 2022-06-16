@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import "../index.css";
@@ -10,9 +10,6 @@ const styles = theme => ({
     color: "#fff"
   },
   sliderDiv: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     padding: "30px"
   }
 });
@@ -67,7 +64,22 @@ const PrettoSlider = styled(Slider)({
 });
 
 const AnswerFormat4 = props => {
-  const { classes, maximum_ans, minimum_ans, answers_array } = props;
+  const {
+    classes,
+    maximum_ans,
+    minimum_ans,
+    answers_array,
+    handleAnswerChange
+  } = props;
+  const [scaleValue, setScaleValue] = useState(minimum_ans);
+
+  console.log("min value", scaleValue);
+
+  const onChangeHandler = e => {
+    setScaleValue({ scaleValue: e.target.value });
+    console.log("scale", e.target.value);
+    handleAnswerChange(e.target.value);
+  };
 
   return (
     <div className={classes.sliderDiv}>
@@ -82,12 +94,14 @@ const AnswerFormat4 = props => {
           fontFamily="Montserrat"
           aria-label="Temperature"
           orientation="vertical"
-          valueLabelDisplay="off"
+          valueLabelDisplay="On"
           type="range"
           name="rangeInput"
+          defaultValue={minimum_ans}
           max={maximum_ans}
           min={minimum_ans}
           marks={answers_array}
+          onChange={e => onChangeHandler(e)}
         />
       </Stack>
     </div>

@@ -61,8 +61,8 @@ const styles = theme => ({
     // },
   },
   logoMobiimg: {
-    "@media only screen and (min-width:250px) and (max-width:420px)": {
-      height: "60px"
+    "@media only screen and (min-width:50px) and (max-width:600px)": {
+      width: "100%"
     },
     "@media only screen and (min-height:700px) and (max-height:1000px)": {
       height: "unset"
@@ -73,7 +73,8 @@ const styles = theme => ({
     borderRadius: 10,
     padding: "20px",
     display: "flow-root",
-    textAlign: "unset"
+    textAlign: "unset",
+    width: "100%"
   },
 
   whiteCard: {
@@ -131,9 +132,11 @@ const Dashboard = props => {
   console.log("open survy", openSurvey);
 
   const [openSurveyDetails, setOpenSurveydetails] = useState([]);
-  const [surveyList, setSurveyList] = useState(" ");
-  console.log("surveyLi", surveyList);
+  const [surveyList, setSurveyList] = useState("");
+  const [surveyName, setSurveyName] = useState(" ");
+  console.log("surveyLi", surveyList.surveyList);
 
+  console.log(surveyName);
   useEffect(() => {
     if (userInfo?.UserId) {
       getOpenSurvey(userInfo.UserId);
@@ -183,9 +186,11 @@ const Dashboard = props => {
         console.log(response);
         localStorage.setItem("openSurvey", JSON.stringify(response));
         props.setAppData("dashboard.openSurvey", response);
+        setSurveyName(response[0].surveyName);
         // setOpenSurveydetails({ openSurveyDetails: response });
         let Tempdata = response.filter(item => !item._Finalized).length;
         setSurveyList({ surveyList: Tempdata });
+        console.log("survey ", Tempdata);
       });
     } catch (e) {
       console.log(e);
@@ -210,13 +215,13 @@ const Dashboard = props => {
           <div className={classes.logoImageStyle}>
             <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
           </div>
-          {surveyList === 0 ? (
+          {surveyList.surveyList === 0 ? (
             <div className={classes.whiteCard}>
               <Typography className={classes.openText}>No open Stix</Typography>
               <Typography className={classes.openText2}>
                 {" "}
                 Good luck transforming your organization! There are no new Stix
-                planned for you yet...s!
+                planned for you yet...!
               </Typography>
             </div>
           ) : (
@@ -227,7 +232,7 @@ const Dashboard = props => {
               </Typography>
               <Typography className={classes.openText2}>
                 {" "}
-                The weekly Change {openSurvey[0]?.surveyName} is ready for you!
+                The weekly {surveyName} is ready for you!
               </Typography>
             </Button>
           )}
@@ -255,107 +260,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(withStyles(styles)(Dashboard));
-
-// class Dashboard extends React.Component {
-//   state = {
-//     userSurvey: [],
-//     // UserIdNumber: this.props.userInfo.UserId,
-//   }
-//   componentDidMount = () => {
-//     console.log("user", this.props.userInfo);
-//     if (this.props.userInfo?.UserId) {
-//       this.getOpenSurveyList(this.props.userInfo.UserId);
-//       // this.getOpenSurveyList();
-//     }
-//   }
-
-//   onClickHandler = () => {
-//     const { history } = this.props;
-//     history.push("./user-home/feedback");
-//   };
-
-//   redCardHandler = () => {
-//     const { history } = this.props;
-//     history.push("./user-home/question1");
-//   };
-
-//   getOpenSurveyList = async id => {
-//     const { setAppData } = this.props;
-//     console.log("props",this.props);
-//     try {
-//       await httpRequest({
-//         endPoint: `api/v1/user/allOpenSurveys?userId=${id}`,
-//         method: "get",
-//         instance: "instanceOne",
-//         contentType:"appication/json"
-//       }).then(response => {
-//         console.log("response", response);
-//         if (response?.length > 0) {
-//           setAppData("dashboard.organisation_info", response);
-//           this.setState({ userSurvey: response[0] });
-//         }
-//       });
-//     } catch (e) {
-//       console.log({ e });
-//     }
-//   };
-
-//   render() {
-//     const { classes, userInfo } = this.props;
-//     console.log("user", userInfo);
-
-//     return (
-//       <div className={classes.root}>
-//         <Hidden only={"xs"}>
-//           <div className={classes.dashboardRoot}>
-//             <Typography className={classes.welcomtext}>Welcome to</Typography>
-//             <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
-//             <Typography className={classes.infoText}>
-//               Currently we help you measure your success in transforming only
-//               through your mobile device.{" "}
-//               <a className={classes.highlightText}> Quick and simple! </a>
-//             </Typography>
-//           </div>
-//         </Hidden>
-//         <Hidden only={["lg", "md", "xl", "sm"]}>
-//           <div className={classes.mobileRoot}>
-//             <div className={classes.logoImageStyle}>
-//               <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
-//             </div>
-//             <Button className={classes.redCard} onClick={this.redCardHandler}>
-//               <Typography className={classes.openText}>1 open Stix</Typography>
-//               <Typography className={classes.openText2}>
-//                 {" "}
-//                 The weekly Change Readiness Stix is ready for you!
-//               </Typography>
-//             </Button>
-
-//             {/* no open Stix */}
-
-//             {/* <div className={classes.whiteCard}>
-//               <Typography className={classes.openText}>No open Stix</Typography>
-//               <Typography className={classes.openText2}> Good luck transforming your organization! There are no new Stix planned for you yet...s!</Typography>
-//             </div> */}
-
-//             <Typography className={classes.suggestionText}>
-//               We are continuously adding new functionalities to your personal
-//               Yardstix space! If you have suggestions please{" "}
-//               <a className={classes.buttonStyle} onClick={this.onClickHandler}>
-//                 click here...
-//               </a>
-//             </Typography>
-//           </div>
-//         </Hidden>
-//       </div>
-//     );
-//   }
-// }
-// const mapStateToProps = ({ screenConfiguration = {} }) => {
-//   const { preparedFinalObject = {} } = screenConfiguration;
-//   const { userInfo } = preparedFinalObject;
-//   return { userInfo };
-// };
-// export default connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(withStyles(styles)(Dashboard));
