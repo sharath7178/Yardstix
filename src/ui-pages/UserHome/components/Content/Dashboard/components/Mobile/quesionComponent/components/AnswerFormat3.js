@@ -88,8 +88,6 @@ class AnswerFormat3 extends React.Component {
       <div>
         <div style={{ padding: "20px 0px" }}>
           {this.state.designation_ans_arr.map((item, key) => {
-            console.log("item", item.width - this.state.widthSize);
-            console.log("item", 100 - 10);
             return (
               <Button
                 key={key}

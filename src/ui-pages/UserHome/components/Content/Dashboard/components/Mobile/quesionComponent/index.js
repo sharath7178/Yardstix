@@ -2,18 +2,8 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import "react-table/react-table.css";
-import {
-  mapDispatchToProps,
-  sliderJson
-} from "../../../../../../../../ui-utils/commons";
-import {
-  Hidden,
-  Typography,
-  Grid,
-  Button,
-  IconButton,
-  InputBase
-} from "@material-ui/core";
+import { mapDispatchToProps } from "../../../../../../../../ui-utils/commons";
+import { Typography, Grid, IconButton } from "@material-ui/core";
 import logoImage from "../../../../../../../../ui-assets/images/logoYardstix.svg";
 import back from "../../../../../../../../ui-assets/images/keyboardReturn.svg";
 import check from "../../../../../../../../ui-assets/images/check.svg";
@@ -135,15 +125,16 @@ class QuestionComponent extends React.Component {
       this.getQuestionHandler(
         openSurvey[0]?.userId,
         0,
-        openSurvey[0]?.surveyId
+        openSurvey[0]?.surveyId,
+        openSurvey[0]?.userSurveyId
       );
     }
   };
 
-  getQuestionHandler = async (uid, index, sid) => {
+  getQuestionHandler = async (uid, index, sid, usid) => {
     try {
       await httpRequest({
-        endPoint: `api/v1/user/questions?userId=${uid}&questionId=${index}&surveyId=${sid}`,
+        endPoint: `api/v1/user/questions?userId=${uid}&questionId=${index}&surveyId=${sid}&userSurveyId=${usid}`,
         method: "get",
         instance: "instanceOne",
         contentType: "application/json",
@@ -158,7 +149,8 @@ class QuestionComponent extends React.Component {
             value: item.AnswerId,
             label: item.label,
             selected: true,
-            width: " "
+            width: "",
+            color: ""
           });
         });
         const max_num = Math.max(...tempData.map(item => item.value));
@@ -183,7 +175,7 @@ class QuestionComponent extends React.Component {
   }
 
   postAnswerHanlder = async () => {
-    const { setAppData, openSurvey, history } = this.props;
+    const { setAppData, openSurvey, history, isSurveyCompleted } = this.props;
     const {
       questions_object,
       selected_ans,
@@ -191,10 +183,9 @@ class QuestionComponent extends React.Component {
       next_question_id
     } = this.state;
     try {
-      debugger;
       const body = {
         userId: questions_object?.UserId,
-        userSurveyId: questions_object?.UserId,
+        userSurveyId: openSurvey[0]?.userSurveyId,
         finilized: !next_question_id ? true : null,
         answerId: null,
         questionId: questions_object?.QuestionId,
@@ -227,7 +218,7 @@ class QuestionComponent extends React.Component {
           break;
         case "2":
           body.department = selected_ans;
-          body.other = selected_ans;
+          body.other = null;
           break;
         case "3":
           body.designation = selected_ans;
@@ -253,11 +244,18 @@ class QuestionComponent extends React.Component {
             this.getQuestionHandler(
               openSurvey[0]?.userId,
               next_question_id,
-              openSurvey[0]?.surveyId
+              openSurvey[0]?.surveyId,
+              openSurvey[0]?.userSurveyId
             );
+            // localStorage.setItem("isSurveyCompleted", false);
             this.setState({ selected_ans: null });
           } else if (next_question_id === null) {
+            // this.props.setAppData("isSurveyCompleted", true);
+            localStorage.setItem("isSurveyCompleted", true);
+            // props.setAppData("userInfo", response);
             history.push("/Yardstix/user-home");
+            console.log("isSurvey", isSurveyCompleted);
+            localStorage.setItem("isSurveyCompleted", false);
           }
         } else {
           setAppData("snackbar", {
@@ -294,12 +292,12 @@ class QuestionComponent extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, openSurvey } = this.props;
 
     console.log("state", this.state);
     const { questions_object = {}, answers_array } = this.state;
     console.log("answer", answers_array);
-
+    console.log("open", openSurvey);
     let answerComponent = null;
 
     if (this.state.ans_format_code === "1") {
@@ -377,9 +375,9 @@ class QuestionComponent extends React.Component {
 }
 const mapStateToProps = ({ screenConfiguration = {} }) => {
   const { preparedFinalObject = {} } = screenConfiguration;
-  const { dashboard } = preparedFinalObject;
+  const { dashboard, isSurveyCompleted } = preparedFinalObject;
   const { openSurvey } = dashboard || "";
-  return { openSurvey };
+  return { openSurvey, isSurveyCompleted };
 };
 export default connect(
   mapStateToProps,

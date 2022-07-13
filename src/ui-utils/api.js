@@ -6,6 +6,7 @@ import createStore from "../ui-redux/store";
 const { store } = createStore();
 
 export const getToken = () => {
+  // debugger
   const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
   return userInfo &&
     userInfo.session_id &&

@@ -1,15 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import Menu from "./components/Menu";
-import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
-import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import UserRoutes from "../../../../ui-routes/UserHomeRoutes";
 
 const styles = theme => ({
@@ -33,7 +27,7 @@ class MiniDrawer extends React.Component {
   };
 
   render() {
-    const { classes, history, login } = this.props;
+    const { classes } = this.props;
     return (
       <div className={classes.root}>
         <CssBaseline />

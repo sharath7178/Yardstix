@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import "react-table/react-table.css";
 import { mapDispatchToProps } from "../../../../../ui-utils/commons";
-import { Hidden, Typography, Grid, Button } from "@material-ui/core";
+import { Hidden, Typography, Grid, Button, Drawer } from "@material-ui/core";
 import logoImage from "../../../../../ui-assets/images/logoYardstix.svg";
 import { httpRequest } from "../../../../../ui-utils/api";
 
@@ -49,12 +49,15 @@ const styles = theme => ({
   logoImageStyle: {
     display: "flex",
     justifyContent: "center",
-    padding: "120px 0px !important",
+    padding: "120px 0px 45px 0px !important",
     "@media only screen and (min-width:250px) and (max-width:350px)": {
       padding: "60px 0px !important"
     },
     "@media only screen and (min-height:550px) and (max-height:600px)": {
-      padding: "60px 0px"
+      padding: "60px 0px !important"
+    },
+    "@media only screen and (min-height:700px) and (max-height:1000px)": {
+      padding: "100px 0px !important"
     }
     // "@media only screen and (min-width:250px) and (max-width:300px)": {
     //   fontSize: "12px"
@@ -74,13 +77,26 @@ const styles = theme => ({
     padding: "20px",
     display: "flow-root",
     textAlign: "unset",
-    width: "100%"
+    width: "100%",
+    textTransform: "unset"
   },
 
   whiteCard: {
     background: "#9B9B9B",
     borderRadius: 10,
-    padding: "20px"
+    padding: "20px",
+    textTransform: "unset"
+  },
+
+  yellowCard: {
+    background: "linear-gradient(to right, #FCE5A9 40%,#FFDF41  100%)",
+    borderRadius: 10,
+    padding: "20px",
+    display: "flow-root",
+    textAlign: "unset",
+    width: "100%",
+    textTransform: "unset",
+    margin: "20px 0px"
   },
 
   openText: {
@@ -103,17 +119,47 @@ const styles = theme => ({
     display: "flex",
     flexFlow: "row",
     alignItems: "start",
-    textTransform: "lowercase"
+    textTransform: "lowercase",
+    "@media only screen and (min-width:250px) and (max-width:300px)": {
+      fontSize: "12px"
+    }
+  },
+
+  openRedText: {
+    fontSize: 24,
+    fontWeight: 700,
+    fontFamily: "Montserrat",
+    color: "darkred",
+    display: "flex",
+    flexFlow: "row",
+    alignItems: "start"
     // "@media only screen and (min-width:250px) and (max-width:300px)": {
-    //   fontSize: "12px"
+    //   fontSize: "20px"
     // },
   },
+  openRedText2: {
+    fontSize: "14px",
+    fontWeight: 400,
+    fontFamily: "Montserrat",
+    color: "darkred",
+    display: "flex",
+    flexFlow: "row",
+    alignItems: "start",
+    textTransform: "lowercase",
+    "@media only screen and (min-width:250px) and (max-width:300px)": {
+      fontSize: "12px"
+    }
+  },
+
   suggestionText: {
-    padding: "50px 0px",
+    padding: "20px 0px",
     fontSize: 16,
     lineHeight: "24px",
     fontFamily: "Montserrat",
-    fontWeight: 400
+    fontWeight: 400,
+    "@media only screen and (min-height:700px) and (max-height:10000px)": {
+      padding: "30px 0px"
+    }
   },
   buttonStyle: {
     color: "#D22222",
@@ -123,20 +169,71 @@ const styles = theme => ({
     fontWeight: 400,
     textTransform: "unset",
     padding: 0
+  },
+  failCard: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    // backgroundColor: "linear-gradient(262.14deg, #D22222 -4.5%, #820505 91.48%)",
+    borderRadius: "0px 0px 30px 30px",
+    flexFlow: "column",
+    padding: "20px",
+    background: "linear-gradient(31.62deg, #299F16 0%, #8BFF78 100%)",
+    color: "#fff"
+  },
+  failText: {
+    fontFamily: "Montserrat",
+    fontSize: "30px",
+    fontWeight: 700,
+    padding: "20px"
+  },
+  failDes: {
+    fontFamily: "Montserrat",
+    fontSize: "14px",
+    fontWeight: 700,
+    padding: "20px",
+    display: "flex",
+    textAlign: "center"
+  },
+  paper: {
+    borderRadius: "0px 0px 30px 30px"
   }
 });
 
 const Dashboard = props => {
-  const { classes, userInfo, openSurvey, history } = props;
+  const {
+    classes,
+    userInfo,
+    openSurvey,
+    history,
+    isSurveyCompleted,
+    spinner
+  } = props;
   console.log("user", userInfo);
   console.log("open survy", openSurvey);
 
+  const surveyComplet = localStorage.getItem("isSurveyCompleted");
+
   const [openSurveyDetails, setOpenSurveydetails] = useState([]);
-  const [surveyList, setSurveyList] = useState("");
-  const [surveyName, setSurveyName] = useState(" ");
+  const [surveyList, setSurveyList] = useState(0);
+  const [surveyName, setSurveyName] = useState("" || null);
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
   console.log("surveyLi", surveyList.surveyList);
+  console.log("isSurvey", props.isSurveyCompleted);
+  console.log("surveyComplete", spinner);
+  console.log("pre", props.preparedFinalObject);
 
   console.log(surveyName);
+  useEffect(() => {
+    if (surveyComplet === "true") {
+      setSurveyCompleted(surveyComplet);
+    }
+  }, []);
+
+  const toggleDrawer = value => {
+    setSurveyCompleted(value);
+  };
+
   useEffect(() => {
     if (userInfo?.UserId) {
       getOpenSurvey(userInfo.UserId);
@@ -147,12 +244,16 @@ const Dashboard = props => {
     if (openSurvey) {
       getQuestionHandler(openSurvey[0]?.userId, openSurvey[0]?.surveyId);
     }
-    history.push("./user-home/questionComponent");
+    history.push("/Yardstix/user-home/questionComponent");
   };
 
   const onClickHandler = () => {
     const { history } = props;
-    history.push("./user-home/feedback");
+    history.push("/Yardstix/user-home/feedback");
+  };
+
+  const openReportsHandler = () => {
+    history.push("/Yardstix/user-home/progress");
   };
 
   const getQuestionHandler = async (uid, sid) => {
@@ -186,8 +287,8 @@ const Dashboard = props => {
         console.log(response);
         localStorage.setItem("openSurvey", JSON.stringify(response));
         props.setAppData("dashboard.openSurvey", response);
-        setSurveyName(response[0].surveyName);
-        // setOpenSurveydetails({ openSurveyDetails: response });
+        setSurveyName(response[0].surveyName || "");
+        setOpenSurveydetails({ openSurveyDetails: response });
         let Tempdata = response.filter(item => !item._Finalized).length;
         setSurveyList({ surveyList: Tempdata });
         console.log("survey ", Tempdata);
@@ -212,10 +313,29 @@ const Dashboard = props => {
       </Hidden>
       <Hidden only={["lg", "md", "xl", "sm"]}>
         <div className={classes.mobileRoot}>
+          <Drawer
+            classes={{ paper: classes.paper }}
+            anchor="top"
+            open={surveyCompleted}
+            onClose={() => toggleDrawer(false)}
+          >
+            <div
+              className={classes.failCard}
+              onClick={() => toggleDrawer(false)}
+              onKeyDown={() => toggleDrawer(false)}
+            >
+              <Typography className={classes.failText}>
+                Stix finalized
+              </Typography>
+              <Typography className={classes.failDes}>
+                Thank you for participation in the Change Readiness Stix!
+              </Typography>
+            </div>
+          </Drawer>
           <div className={classes.logoImageStyle}>
             <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
           </div>
-          {surveyList.surveyList === 0 ? (
+          {openSurveyDetails.length === 0 ? (
             <div className={classes.whiteCard}>
               <Typography className={classes.openText}>No open Stix</Typography>
               <Typography className={classes.openText2}>
@@ -237,6 +357,13 @@ const Dashboard = props => {
             </Button>
           )}
 
+          <Button className={classes.yellowCard} onClick={openReportsHandler}>
+            <Typography className={classes.openRedText}> Reports</Typography>
+            <Typography className={classes.openRedText2}>
+              View current reports here
+            </Typography>
+          </Button>
+
           <Typography className={classes.suggestionText}>
             We are continuously adding new functionalities to your personal
             Yardstix space! If you have suggestions please{" "}
@@ -252,9 +379,21 @@ const Dashboard = props => {
 
 const mapStateToProps = ({ screenConfiguration = {} }) => {
   const { preparedFinalObject = {} } = screenConfiguration;
-  const { userInfo, dashboard } = preparedFinalObject;
+  const {
+    userInfo,
+    dashboard,
+    isSurveyCompleted,
+    spinner
+  } = preparedFinalObject;
+  console.log("preparedFinalObject", preparedFinalObject);
   const { openSurvey } = dashboard || "";
-  return { userInfo, openSurvey };
+  return {
+    userInfo,
+    openSurvey,
+    isSurveyCompleted,
+    spinner,
+    preparedFinalObject
+  };
 };
 export default connect(
   mapStateToProps,

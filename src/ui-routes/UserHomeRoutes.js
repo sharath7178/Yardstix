@@ -17,6 +17,22 @@ const QuestionComponent = Loadable({
   loading: Loading
 });
 
+const ProgressBar = Loadable({
+  loader: () =>
+    import(
+      "../ui-pages/UserHome/components/Content/Dashboard/components/Mobile/reports/Components/ProgressBar"
+    ),
+  loading: Loading
+});
+
+const ProgressDetails = Loadable({
+  loader: () =>
+    import(
+      "../ui-pages/UserHome/components/Content/Dashboard/components/Mobile/reports/Components/ProgressDetails"
+    ),
+  loading: Loading
+});
+
 const feedback = Loadable({
   loader: () =>
     import(
@@ -34,6 +50,14 @@ const UserRoutes = () => {
         component={QuestionComponent}
       />
       <SecuredRoute path="/Yardstix/user-home/feedback" component={feedback} />
+      <SecuredRoute
+        path="/Yardstix/user-home/progress"
+        component={ProgressBar}
+      />
+      <SecuredRoute
+        path="/Yardstix/user-home/progressDetails"
+        component={ProgressDetails}
+      />
     </div>
   );
 };

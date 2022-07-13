@@ -8,6 +8,7 @@ import rectangle from "../../ui-assets/images/rectangleImage.svg";
 import arrow from "../../ui-assets/images/forwardArrow.svg";
 import windows from "../../ui-assets/images/windows.svg";
 import { httpRequest } from "ui-utils";
+import Drawer from "@material-ui/core/Drawer";
 
 const styles = {
   root: {
@@ -165,22 +166,58 @@ const styles = {
     "@media only screen and (min-width:330px) and (max-width:420px)": {
       fontSize: "15px"
     }
+  },
+  failCard: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    // backgroundColor: "linear-gradient(262.14deg, #D22222 -4.5%, #820505 91.48%)",
+    borderRadius: "0px 0px 30px 30px",
+    flexFlow: "column",
+    padding: "20px",
+    background: "linear-gradient(31.62deg, #D22222 0%, #820505 100%)",
+    color: "#fff"
+  },
+  failText: {
+    fontFamily: "Montserrat",
+    fontSize: "30px",
+    fontWeight: 700,
+    padding: "20px"
+  },
+  failDes: {
+    fontFamily: "Montserrat",
+    fontSize: "14px",
+    fontWeight: 700,
+    padding: "20px",
+    display: "flex",
+    textAlign: "center"
+  },
+
+  paper: {
+    borderRadius: "0px 0px 30px 30px"
   }
 };
 
 class Login extends React.Component {
-  login = async () => {};
+  state = {
+    top: false
+  };
 
-  loginHandler = () => {
-    const { history } = this.props;
-    history.push("Yardstix/user-home");
+  componentDidMount = () => {
+    if (this.props.userInfo?.isregistered === false) {
+      this.setState({ top: true });
+    }
+  };
+
+  toggleDrawer = value => {
+    this.setState({ top: value });
   };
 
   loginHandler = async () => {
-    debugger;
+    // debugger;
     try {
       await httpRequest({
-        endPoint: `api/Account/ExternalLogins?returnUrl=https://projects.nimble.expert/NMTApi/&generateState=${true}`,
+        endPoint: `api/Account/ExternalLogins?returnUrl=https://projects.nimble.expert/YardstixAPI/&generateState=${true}`,
         method: "get",
         instance: "instanceOne"
       }).then(response => {
@@ -190,7 +227,7 @@ class Login extends React.Component {
 
           this.setState({ login: response[0] });
           url = url.replace(
-            "https%3A%2F%2Fprojects.nimble.expert%2FNMTApi%2F",
+            "https%3A%2F%2Fprojects.nimble.expert%2FYardstixAPI%2F",
             window.origin + "/" + "Yardstix" + "/"
           );
           window.location.href = "https://projects.nimble.expert" + url;
@@ -202,7 +239,9 @@ class Login extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, userInfo } = this.props;
+
+    console.log("users ", userInfo);
     return (
       <div className={classes.root}>
         <Hidden only={"xs"}>
@@ -210,6 +249,28 @@ class Login extends React.Component {
         </Hidden>
         <Hidden only={["lg", "md", "xl", "sm"]}>
           <div className={classes.mobileRoot}>
+            <Drawer
+              classes={{ paper: classes.paper }}
+              anchor="top"
+              open={this.state.top}
+              onClose={() => this.toggleDrawer(false)}
+            >
+              <div
+                className={classes.failCard}
+                // tabIndex={0}
+                // role="button"
+                onClick={() => this.toggleDrawer(false)}
+                onKeyDown={() => this.toggleDrawer(false)}
+              >
+                <Typography className={classes.failText}>
+                  Login failed
+                </Typography>
+                <Typography className={classes.failDes}>
+                  Sorry, the email address you used to login is not registered.
+                  Please try again or get in contact
+                </Typography>
+              </div>
+            </Drawer>
             <div className={classes.logoImageStyle}>
               <img className={classes.logoMobiimg} src={logoImage} alt="logo" />
             </div>
@@ -254,8 +315,7 @@ class Login extends React.Component {
                   <img
                     className={classes.windowsImage}
                     src={windows}
-                    alt="logo"
-                    windows
+                    alt="windows"
                   ></img>
                 </Grid>
                 <Grid item xs={9}>

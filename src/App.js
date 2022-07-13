@@ -10,15 +10,17 @@ import { httpRequest } from "./ui-utils/api";
 import LoadingOverlay from "react-loading-overlay";
 
 const App = props => {
-  const { setAppData, menuList = [] } = props;
+  const { userInfo } = props;
   const [loader, setLoader] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const hasAccess_token =
     window.location.href.includes("access_token") || false;
 
   console.log("access token", hasAccess_token);
+  console.log("setDrawerOpen", drawerOpen);
 
   useEffect(() => {
-    debugger;
+    // debugger
     if (hasAccess_token) {
       let tempLocation = window.location.href.split("&")?.[0].split("=") || "";
       localStorage.setItem("access_token", tempLocation[1]);
@@ -27,6 +29,7 @@ const App = props => {
   }, [hasAccess_token]);
 
   const getAuthInfo = async access_token => {
+    // debugger
     setLoader(true);
     try {
       await httpRequest({
@@ -38,17 +41,22 @@ const App = props => {
         }
       }).then(response => {
         console.log("userInfo", response);
-        if (response.UserId) {
+        if (response?.isregistered === true) {
           localStorage.setItem("validityResponse", JSON.stringify(response));
           props.setAppData("userInfo", response);
           setLoader(false);
           props.history.push("/Yardstix/user-home");
+        } else {
+          setLoader(false);
+          props.setAppData("userInfo", response);
+          props.history.push("/Yardstix/login");
         }
       });
     } catch (e) {
       console.log(e);
     }
   };
+  console.log("setDraw", drawerOpen);
 
   return (
     <LoadingOverlay
@@ -65,6 +73,23 @@ const App = props => {
       <div>
         <MainRoutes />
         <Snackbar />
+        {/* {
+          userInfo?.isregistered === false && (
+            <Drawer open={true} onClose={toggleDrawer(false)}>
+              <div
+                className="failCard"
+                tabIndex={0}
+                role="button"
+                onClick={() => toggleDrawer(false)}
+                onKeyDown={toggleDrawer(false)}
+              >
+                <Typography>Login failed</Typography>
+                <Typography>Sorry, the email address you used to login is not registered. Please try again or get in contact</Typography>
+
+              </div>
+            </Drawer>
+          )
+        } */}
       </div>
     </LoadingOverlay>
   );
@@ -72,67 +97,8 @@ const App = props => {
 
 const mapStateToProps = ({ screenConfiguration }) => {
   const { preparedFinalObject = {} } = screenConfiguration;
-  const { spinner = false, userInfo = {}, menuList = [] } = preparedFinalObject;
+  const { spinner = false, userInfo, menuList = [] } = preparedFinalObject;
   return { spinner, userInfo, menuList };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));
-
-// import React from "react";
-// import { withRouter } from "react-router-dom";
-// import Snackbar from "./ui-containers/SnackBar";
-// import CircularProgress from "@material-ui/core/CircularProgress";
-// import { mapDispatchToProps } from "./ui-utils/commons";
-// import MainRoutes from "./ui-routes/MainRoutes";
-// import isEmpty from "lodash/isEmpty";
-// import { connect } from "react-redux";
-// import "./App.css";
-// import { httpRequest } from "./ui-utils/api";
-// // import LoadingOverlay from "react-loading-overlay";
-
-// class App extends React.Component {
-//   state = {
-//     loader: false,
-//   }
-
-//   componentDidMount = () => {
-//     if (hasAccess_token) {
-//       let tempLocation = window.location.href.split("&")?.[0].split("=") || "";
-//       localStorage.setItem("access_token", tempLocation[1]);
-//       getAuthInfo(tempLocation[1]);
-//     }
-//   }zz[hasAccess_token]);
-
-//   render() {
-//     const { spinner, userInfo } = this.props;
-
-//     const hasAccess_token =
-//       window.location.href.includes("access_token") || false;
-//     return (
-//       <div>
-//         <MainRoutes />
-//         <Snackbar />
-//         {spinner && isEmpty(userInfo) && (
-//           <div
-//             style={{
-//               position: "absolute",
-//               left: "50%",
-//               top: "50%",
-//               transform: "translate(-50%, -50%)"
-//             }}
-//           >
-//             <CircularProgress />
-//           </div>
-//         )}
-//       </div>
-//     );
-//   }
-// }
-
-// const mapStateToProps = ({ screenConfiguration }) => {
-//   const { preparedFinalObject = {} } = screenConfiguration;
-//   const { spinner = false, userInfo = {} } = preparedFinalObject;
-//   return { spinner, userInfo };
-// };
-
-// export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));

@@ -14,6 +14,7 @@ const intialState = {
       message: ""
     },
     spinner: false,
+    isSurveyCompleted: false,
     userInfo: getUserInfo(),
     dashboard: {
       openSurvey: {},
